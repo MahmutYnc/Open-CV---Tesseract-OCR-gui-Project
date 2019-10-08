@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <NATIVE>
+      <root url="file://C:/opencv2.4/opencv/build/java/x64" />
+    </NATIVE>
+    <SOURCES />
+    <jarDirectory url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" recursive="false" />
+  </library>
+</component>
