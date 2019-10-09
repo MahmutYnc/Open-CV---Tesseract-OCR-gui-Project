@@ -20,6 +20,7 @@ import net.sourceforge.tess4j.TesseractException;
 
 public class Main {
 
+    static GUIClass gui;
 
     // Source path content images
     static String SRC_PATH = "C:\\Recognize\\java_text";
@@ -73,7 +74,8 @@ public class Main {
         String result = new Main().extractTextFromImage(origin);
         rString = result;
         System.out.println(result);
-
+        gui = new GUIClass();
+        gui.resultText.setText(rString);
         System.out.println("Time");
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
