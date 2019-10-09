@@ -28,6 +28,9 @@ public class Main {
     // Create tess obj
     static Tesseract tesseract = new Tesseract();
 
+    //hold the resultString
+    public static String rString;
+
     // Load OPENCV
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -68,6 +71,7 @@ public class Main {
         Mat origin = imread("C:\\Users\\Mahmut\\Desktop\\test4.jpg");
 
         String result = new Main().extractTextFromImage(origin);
+        rString = result;
         System.out.println(result);
 
         System.out.println("Time");
