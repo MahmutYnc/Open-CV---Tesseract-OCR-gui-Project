@@ -82,7 +82,7 @@ public class Main {
         g = new GuiClass();
         GuiClass.anafonk();
 
-        
+
 
     }
 
