@@ -6,6 +6,11 @@ import java.awt.*;
 public class GUIClass extends JFrame{
 
     private JPanel panel1;
+    private JPanel sorguPanel;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JButton button1;
+    private JPanel gorselPanel;
     private JPanel myPanel;
     public JTextField resultText;
 
