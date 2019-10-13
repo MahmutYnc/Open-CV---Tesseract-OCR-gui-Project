@@ -21,6 +21,8 @@ import net.sourceforge.tess4j.TesseractException;
 public class Main {
 
     public static GuiClass g;
+    public static Combiner c;
+    public String imagePath;
 
     // Source path content images
     static String SRC_PATH = "C:\\Recognize\\java_text";
@@ -71,10 +73,17 @@ public class Main {
 
     public void baslat() {
 
+        g = new GuiClass();
+        g.anafonk();
 
+    }
+    public void tesseract() {
         System.out.println("Start recognize text from image");
         long start = System.currentTimeMillis();
         String path;
+
+        path = pathther(g.path);
+        System.out.println(path);
         // Read image
         Mat origin = imread("C:\\Users\\Mahmut\\Desktop\\test4.jpg");
 
@@ -85,16 +94,14 @@ public class Main {
         System.out.println("Time");
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
-
-
-
-        g = new GuiClass();
-        g.anafonk();
         g.textSetter(result);
-        //path = g.imagePat;
-        //System.out.println();
+    }
 
+    public String pathther(String string) {
 
+        String myNewString = string.replace("\\\\?", "\\?");
+        System.out.println(myNewString);
+        return myNewString;
     }
 
 }

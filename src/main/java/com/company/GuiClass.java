@@ -16,6 +16,7 @@ import java.io.File;
 public class GuiClass extends javax.swing.JFrame {
 
     Main m = new Main();
+
     /**
      * Creates new form GuiClass
      */
@@ -55,7 +56,9 @@ public class GuiClass extends javax.swing.JFrame {
                 else if(result == JFileChooser.CANCEL_OPTION){
                     System.out.println("No File Selected");
                 }
-                System.out.println(path);
+
+                //System.out.println(path);
+                m.tesseract();
 
             }
         /*
