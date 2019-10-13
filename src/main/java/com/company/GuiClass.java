@@ -1,12 +1,75 @@
 package main.java.com.company;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+
+/**
+ *
+ * @author Mahmut
+ */
 public class GuiClass extends javax.swing.JFrame {
 
+    Main m = new Main();
     /**
      * Creates new form GuiClass
      */
+
+    public String path;
+
+//In response to a button click:
+
     public GuiClass() {
         initComponents();
+        gorselButon.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser file = new JFileChooser();
+                String pathName = "C:\\Users\\Mahmut\\Desktop";
+                if (null == pathName) {
+                    pathName = ""; //$NON-NLS-1$
+                }
+                file.setCurrentDirectory(new File(pathName));
+
+                //filter the files
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("*.Images", "jpg","gif","png");
+                file.addChoosableFileFilter(filter);
+                int result = file.showSaveDialog(null);
+                //if the user click on save in Jfilechooser
+                if(result == JFileChooser.APPROVE_OPTION){
+                    File selectedFile = file.getSelectedFile();
+                    path = selectedFile.getAbsolutePath();
+                    gorsel.setIcon(ResizeImage(path));
+
+
+                }
+                //if the user click on save in Jfilechooser
+
+
+
+                else if(result == JFileChooser.CANCEL_OPTION){
+                    System.out.println("No File Selected");
+                }
+                System.out.println(path);
+
+            }
+        /*
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }*/
+
+        });
+
+
+
+        text.setText(m.rString);
+
     }
 
     /**
@@ -18,12 +81,11 @@ public class GuiClass extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
+        jDialog1 = new javax.swing.JDialog();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        gorsel = new javax.swing.JTextPane();
         gorselButon = new javax.swing.JButton();
+        text = new javax.swing.JTextArea();
+        gorsel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -33,34 +95,54 @@ public class GuiClass extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
 
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+                jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE)
+        );
+        jDialog1Layout.setVerticalGroup(
+                jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
 
-        textArea.setColumns(20);
-        textArea.setRows(5);
-        jScrollPane1.setViewportView(textArea);
-
-        gorsel.setEditable(false);
-        jScrollPane2.setViewportView(gorsel);
-
         gorselButon.setText("Görsel Seç");
+        gorselButon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                gorselButonMouseClicked(evt);
+            }
+        });
+        gorselButon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gorselButonActionPerformed(evt);
+            }
+        });
+
+        text.setText("jTextField1");
+
+        gorsel.setBackground(new java.awt.Color(204, 135, 7));
+        gorsel.setToolTipText("");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(24, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(26, 26, 26)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addContainerGap())
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(0, 306, Short.MAX_VALUE)
                                                 .addComponent(gorselButon)
-                                                .addGap(297, 297, 297))))
+                                                .addGap(297, 297, 297))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(gorsel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(text, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -69,8 +151,8 @@ public class GuiClass extends javax.swing.JFrame {
                                 .addComponent(gorselButon)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
-                                        .addComponent(jScrollPane2))
+                                        .addComponent(text, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                                        .addComponent(gorsel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap())
         );
 
@@ -147,6 +229,11 @@ public class GuiClass extends javax.swing.JFrame {
                         "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"
                 }
         ));
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(table);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -178,12 +265,26 @@ public class GuiClass extends javax.swing.JFrame {
         pack();
     }// </editor-fold>
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    private void fisAraButonActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void tableMouseClicked(java.awt.event.MouseEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void gorselButonActionPerformed(java.awt.event.ActionEvent evt) {
+
+        // TODO add your handling code here:
+
+    }
+
+    private void gorselButonMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
     }
 
 
-    public static void anafonk() {
+    public void anafonk() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -213,30 +314,50 @@ public class GuiClass extends javax.swing.JFrame {
                 new GuiClass().setVisible(true);
             }
         });
-    }
-    public static void setText(){
+
+        // listener
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int col = table.columnAtPoint(e.getPoint());
+                String name = table.getColumnName(col);
+                System.out.println("asdasdkasdkasd");
+                System.out.println("Column index selected " + col + " " + name);
+            }
+        });
+
+
+
 
     }
-
-    private void fisAraButonActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+    // Methode to resize imageIcon with the same size of a Jlabel
+    public ImageIcon ResizeImage(String ImagePath)
+    {
+        ImageIcon MyImage = new ImageIcon(ImagePath);
+        Image img = MyImage.getImage();
+        Image newImg = img.getScaledInstance(342, 366, Image.SCALE_SMOOTH);
+        ImageIcon image = new ImageIcon(newImg);
+        return image;
     }
 
+    //Okunan metini textfield a atamar
+    public void textSetter (String string) {
+        text.setText(string);
+    }
 
     // Variables declaration - do not modify
     private javax.swing.JTextField firmaField;
     private javax.swing.JButton fisAraButon;
-    private javax.swing.JTextPane gorsel;
+    private javax.swing.JLabel gorsel;
     private javax.swing.JButton gorselButon;
+    private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable table;
     private javax.swing.JTextField tarihField;
-    private javax.swing.JTextArea textArea;
+    private javax.swing.JTextArea text;
     // End of variables declaration
 }
