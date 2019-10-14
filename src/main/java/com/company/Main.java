@@ -77,15 +77,13 @@ public class Main {
         g.anafonk();
 
     }
-    public void tesseract() {
+    public void tesseract(String path) {
         System.out.println("Start recognize text from image");
         long start = System.currentTimeMillis();
-        String path;
 
-        path = pathther(g.path);
         System.out.println(path);
         // Read image
-        Mat origin = imread("C:\\Users\\Mahmut\\Desktop\\test4.jpg");
+        Mat origin = imread(path);
 
         String result = new Main().extractTextFromImage(origin);
         rString = result;
@@ -94,14 +92,9 @@ public class Main {
         System.out.println("Time");
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
+
         g.textSetter(result);
     }
 
-    public String pathther(String string) {
-
-        String myNewString = string.replace("\\\\?", "\\?");
-        System.out.println(myNewString);
-        return myNewString;
-    }
 
 }

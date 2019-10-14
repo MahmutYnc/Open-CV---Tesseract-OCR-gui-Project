@@ -27,7 +27,9 @@ public class GuiClass extends javax.swing.JFrame {
 
     public GuiClass() {
         initComponents();
+
         gorselButon.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
 
                 JFileChooser file = new JFileChooser();
@@ -58,20 +60,17 @@ public class GuiClass extends javax.swing.JFrame {
                 }
 
                 //System.out.println(path);
-                m.tesseract();
+                m.tesseract(path);
+                System.out.println(m.rString);
+                textSetter(m.rString);
 
             }
-        /*
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                    }*/
 
         });
 
 
 
-        text.setText(m.rString);
+
 
     }
 
@@ -125,7 +124,7 @@ public class GuiClass extends javax.swing.JFrame {
             }
         });
 
-        text.setText("jTextField1");
+        text.setText("");
 
         gorsel.setBackground(new java.awt.Color(204, 135, 7));
         gorsel.setToolTipText("");
@@ -165,9 +164,9 @@ public class GuiClass extends javax.swing.JFrame {
 
         jLabel2.setText("Tarih : ");
 
-        firmaField.setText("jTextField1");
+        firmaField.setText("");
 
-        tarihField.setText("jTextField2");
+        tarihField.setText("");
 
         fisAraButon.setText("Ara");
         fisAraButon.addActionListener(new java.awt.event.ActionListener() {
