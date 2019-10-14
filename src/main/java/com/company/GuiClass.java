@@ -21,6 +21,9 @@ public class GuiClass extends javax.swing.JFrame {
      * Creates new form GuiClass
      */
 
+
+
+
     public String path;
 
 //In response to a button click:
@@ -33,7 +36,7 @@ public class GuiClass extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 JFileChooser file = new JFileChooser();
-                String pathName = "C:\\Users\\Mahmut\\Desktop";
+                String pathName = "C:\\Users\\Mahmut\\IdeaProjects\\openCvOCR\\img";
                 if (null == pathName) {
                     pathName = ""; //$NON-NLS-1$
                 }
@@ -52,16 +55,12 @@ public class GuiClass extends javax.swing.JFrame {
 
                 }
                 //if the user click on save in Jfilechooser
-
-
-
                 else if(result == JFileChooser.CANCEL_OPTION){
                     System.out.println("No File Selected");
                 }
 
                 //System.out.println(path);
                 m.tesseract(path);
-                System.out.println(m.rString);
                 textSetter(m.rString);
 
             }
@@ -294,8 +293,10 @@ public class GuiClass extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
+
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    //javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     break;
                 }
             }

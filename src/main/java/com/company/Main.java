@@ -21,8 +21,7 @@ import net.sourceforge.tess4j.TesseractException;
 public class Main {
 
     public static GuiClass g;
-    public static Combiner c;
-    public String imagePath;
+
 
     // Source path content images
     static String SRC_PATH = "C:\\Recognize\\java_text";
@@ -93,7 +92,6 @@ public class Main {
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
 
-        g.textSetter(result);
     }
 
 
