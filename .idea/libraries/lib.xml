@@ -2,10 +2,12 @@
   <library name="lib">
     <CLASSES>
       <root url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" />
+      <root url="file://C:/opencv/build/x64/vc14/lib" />
     </CLASSES>
     <JAVADOC />
     <NATIVE>
       <root url="file://C:/opencv2.4/opencv/build/java/x64" />
+      <root url="file://C:/opencv/build/java/x64" />
     </NATIVE>
     <SOURCES />
     <jarDirectory url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" recursive="false" />
