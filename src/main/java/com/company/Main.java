@@ -92,6 +92,13 @@ public class Main {
         g.anafonk();
 
     }
+    String sTarih;
+    String sFisNo;
+    String sSaat;
+
+    String sKDV;
+    //[a-zA-Z]+[0-9]{2}
+
     public void tesseract(String path) {
 
 
@@ -136,7 +143,8 @@ public class Main {
         Imgproc.adaptiveThreshold(imgGaussianBlur, imgAdaptiveThreshold, 255, CV_ADAPTIVE_THRESH_MEAN_C ,CV_THRESH_BINARY, 79, 27);
         Imgcodecs.imwrite("preprocess/adaptive_threshold2.png", imgAdaptiveThreshold);
 
-        File imageFile = new File("preprocess/adaptive_threshold2.png");
+
+        File imageFile = new File("preprocess/True_Image.png");
         ITesseract instance = new Tesseract();
         instance.setDatapath(TESS_DATA);
         instance.setLanguage("tur");
@@ -159,12 +167,27 @@ public class Main {
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
 
+        //Tarih splitter
+        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", result);
+        System.out.println(sTarih);
+        //Fiş no splitter
+        sFisNo = regexChecker("FİŞ NO\\s:\\s[0-9]{4}|FİİŞ NO\\s:\\s[0-9]{4}|FIŞ NO\\s:\\s[0-9]{4}|FIIS NO\\s:\\s[0-9]{4}|FIS NO\\s:\\s[0-9]{4}|FISANU.\\s:\\s[0-9]{4}", result);
+        sFisNo = regexChecker("[0-9]{4}", sFisNo);
+        System.out.println(sFisNo);
+        //Saat
+        sSaat = regexChecker("([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|([01]?[0-9]|2[0-3]):[0-5][0-9]", result);
+        System.out.println(sSaat);
+
+        //KDV
+        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", result);
+        sKDV = regexChecker("[0-9]{2}", sKDV);
+        System.out.println(sKDV);
     }
 
 
-    //Regex Checker Function to
-    public static void regexChecker(String theRegex, String str2Check){
-
+    //Regex Checker Function
+    public static String regexChecker(String theRegex, String str2Check){
+        String returner = null;
         // You define your regular expression (REGEX) using Pattern
 
         Pattern checkRegex = Pattern.compile(theRegex);
@@ -179,16 +202,14 @@ public class Main {
 
         while ( regexMatcher.find() ){
             if (regexMatcher.group().length() != 0){
-                System.out.println( regexMatcher.group().trim() );
-
+                //System.out.println( regexMatcher.group().trim() );
+                returner = regexMatcher.group().trim();
                 // You can get the starting and ending indexs
-
-                System.out.println( "Start Index: " + regexMatcher.start());
-                System.out.println( "Start Index: " + regexMatcher.end());
             }
         }
 
         System.out.println();
+        return returner;
     }
 
 
