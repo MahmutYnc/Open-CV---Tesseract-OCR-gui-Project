@@ -2,10 +2,12 @@
   <library name="Maven: ch.qos.logback:logback-classic:1.2.3">
     <CLASSES>
       <root url="jar://$MAVEN_REPOSITORY$/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar!/" />
-      <root url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-    <jarDirectory url="file://C:/opencv2.4/opencv/build/x64/vc14/lib" recursive="false" />
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

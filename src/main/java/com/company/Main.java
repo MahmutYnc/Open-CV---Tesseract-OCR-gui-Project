@@ -10,6 +10,8 @@ import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
 
 import java.io.File;
+import java.text.Normalizer;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,6 +98,8 @@ public class Main {
     String sFisNo;
     String sSaat;
 
+    String as;
+
     String sKDV;
     //[a-zA-Z]+[0-9]{2}
 
@@ -144,7 +148,7 @@ public class Main {
         Imgcodecs.imwrite("preprocess/adaptive_threshold2.png", imgAdaptiveThreshold);
 
 
-        File imageFile = new File("preprocess/True_Image.png");
+        File imageFile = new File("preprocess/gaussian_blur.png");
         ITesseract instance = new Tesseract();
         instance.setDatapath(TESS_DATA);
         instance.setLanguage("tur");
@@ -155,7 +159,9 @@ public class Main {
         } catch (TesseractException e) {
             e.printStackTrace();
         }
-        System.out.println(result);
+        rString = result;
+        as = result;
+        //System.out.println(result);
 
 //        String res = new Main().extractTextFromImage(imgAdaptiveThreshold);
 //        System.out.println(res);
@@ -167,22 +173,55 @@ public class Main {
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
 
+        splitter();
+
+    }
+    static Locale enLocale = Locale.forLanguageTag("en_US");
+
+
+    //String paraçalama işi burada dönüyor
+    public void splitter() {
         //Tarih splitter
-        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", result);
-        System.out.println(sTarih);
+        //sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
+       // System.out.println(sTarih);
+
+
         //Fiş no splitter
-        sFisNo = regexChecker("FİŞ NO\\s:\\s[0-9]{4}|FİİŞ NO\\s:\\s[0-9]{4}|FIŞ NO\\s:\\s[0-9]{4}|FIIS NO\\s:\\s[0-9]{4}|FIS NO\\s:\\s[0-9]{4}|FISANU.\\s:\\s[0-9]{4}", result);
-        sFisNo = regexChecker("[0-9]{4}", sFisNo);
-        System.out.println(sFisNo);
+        as = clearTurkishChars(as);
+
+        sFisNo = regexChecker("(.*?.*:?fıs.*)", as);
+        if (sFisNo != null){
+            sFisNo = regexChecker("[0-9]{4}", sFisNo);
+            System.out.println("fiş no :" + sFisNo);
+        }
+
+
+
+
+
+
         //Saat
-        sSaat = regexChecker("([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|([01]?[0-9]|2[0-3]):[0-5][0-9]", result);
-        System.out.println(sSaat);
+//      sSaat = regexChecker("([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|([01]?[0-9]|2[0-3]):[0-5][0-9]", rString);
+//      System.out.println(sSaat);
 
         //KDV
-        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", result);
-        sKDV = regexChecker("[0-9]{2}", sKDV);
-        System.out.println(sKDV);
+//        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", rString);
+//        sKDV = regexChecker("[0-9]{2}", sKDV);
+//        System.out.println(sKDV);
     }
+
+    public static String clearTurkishChars(String str) {
+        String ret = str;
+        char[] turkishChars = new char[] {0x131, 0x130, 0xFC, 0xDC, 0xF6, 0xD6, 0x15F, 0x15E, 0xE7, 0xC7, 0x11F, 0x11E};
+        char[] englishChars = new char[] {'i', 'I', 'u', 'U', 'o', 'O', 's', 'S', 'c', 'C', 'g', 'G'};
+        for (int i = 0; i < turkishChars.length; i++) {
+            ret = ret.replaceAll(new String(new char[]{turkishChars[i]}), new String(new char[]{englishChars[i]}));
+        }
+        return ret;
+    }
+
+
+
 
 
     //Regex Checker Function
@@ -190,7 +229,11 @@ public class Main {
         String returner = null;
         // You define your regular expression (REGEX) using Pattern
 
-        Pattern checkRegex = Pattern.compile(theRegex);
+       // Pattern checkRegex = Pattern.compile(theRegex);
+
+        str2Check = str2Check.toLowerCase();
+
+        Pattern checkRegex = Pattern.compile(theRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
         // Creates a Matcher object that searches the String for
         // anything that matches the REGEX
