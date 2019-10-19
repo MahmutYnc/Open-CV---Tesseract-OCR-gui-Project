@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.imgproc.Imgproc;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.imageio.ImageIO;
 
@@ -50,6 +53,7 @@ public class Main {
 
     //hold the resultString
     public static String rString;
+    public static List<String> rtun = new ArrayList<>(10);
 
     // Load OPENCV
     static {
@@ -100,11 +104,12 @@ public class Main {
     }
     String sTarih;
     String sFisNo;
-    String sSaat;
+    ArrayList<String> urun = null;
 
     String as;
 
-    String sKDV;
+    String sirket;
+
     //[a-zA-Z]+[0-9]{2}
 
     public void scalingOfImage() {
@@ -159,7 +164,7 @@ public class Main {
         grayscale(path);
 
 
-        File imageFile = new File("preprocess/grayscale.tiff");
+        File imageFile = new File("preprocess/Gray.png");
         ITesseract instance = new Tesseract();
         instance.setDatapath(TESS_DATA);
         instance.setLanguage("tur");
@@ -187,6 +192,9 @@ public class Main {
         splitter();
 
     }
+
+
+    //grayscale
     public void grayscale(String path){
         BufferedImage img = null;
         File f = null;
@@ -256,14 +264,27 @@ public class Main {
             System.out.println("fiş no :" + sFisNo);
         }
 
+        sirket = regexChecker("^.*\\r?\\n(.*)", as);
+        String lines[] = sirket.split("\\r?\\n");
+        if (sirket.contains("tesekkurler")){
+            sirket = lines[1];
+        } else if (sirket.contains("a.s")) {
+            if (lines[0].contains("a.s")){
+                sirket = lines[0];
+            }else {
+                sirket = lines[1];
+            }
+        }
+
+        System.out.println(sirket);
 
 
+        //Urun
+        regexer("(.*?.*:?x08.*)|(.*?.*:?408.*)|(.*?.*:?%08.*)|(.*?.*:?X08.*)|(.*?.*:?\\*08.*)|(.*?.*:?x18.*)|(.*?.*:?418.*)|(.*?.*:?%18.*)|(.*?.*:?X18.*)|" +
+                "(.*?.*:?\\*18.*)|(.*?.*:?x01.*)|(.*?.*:?401.*)|(.*?.*:?%01.*)|(.*?.*:?X01.*)|(.*?.*:?\\*01.*)|(.*?.*:?x8.*)|(.*?.*:?48.*)|(.*?.*:?%8.*)|(.*?.*:?X8.*)|(.*?.*:?\\*8.*)", as );
 
+        rtun.forEach((n) -> System.out.println(n));
 
-
-        //Saat
-//      sSaat = regexChecker("([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|([01]?[0-9]|2[0-3]):[0-5][0-9]", rString);
-//      System.out.println(sSaat);
 
         //KDV
 //        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", rString);
@@ -314,6 +335,39 @@ public class Main {
 
         System.out.println();
         return returner;
+    }
+
+
+    //Regex Checker Function
+    public static void  regexer(String theRegex, String str2Check){
+
+        // You define your regular expression (REGEX) using Pattern
+
+        // Pattern checkRegex = Pattern.compile(theRegex);
+
+        str2Check = str2Check.toLowerCase();
+
+        Pattern checkRegex = Pattern.compile(theRegex, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+        // Creates a Matcher object that searches the String for
+        // anything that matches the REGEX
+
+        Matcher regexMatcher = checkRegex.matcher( str2Check );
+
+
+        // Cycle through the positive matches and print them to screen
+        rtun.clear();
+        // Make sure string isn't empty and trim off any whitespace
+        String line;
+        while ( regexMatcher.find() ){
+            if (regexMatcher.group().length() != 0){
+                line = regexMatcher.group().trim();
+                rtun.add(line);
+                // You can get the starting and ending indexs
+            }
+        }
+
+        System.out.println();
     }
 
 
