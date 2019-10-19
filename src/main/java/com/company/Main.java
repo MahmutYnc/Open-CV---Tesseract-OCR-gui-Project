@@ -9,7 +9,9 @@ import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.erode;
 import static org.opencv.imgproc.Imgproc.getStructuringElement;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.Normalizer;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -26,6 +28,8 @@ import org.opencv.imgcodecs.Imgcodecs;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.imgproc.Imgproc;
+
+import javax.imageio.ImageIO;
 
 public class Main {
 
@@ -103,6 +107,10 @@ public class Main {
     String sKDV;
     //[a-zA-Z]+[0-9]{2}
 
+    public void scalingOfImage() {
+
+    }
+
     public void tesseract(String path) {
 
 
@@ -139,7 +147,7 @@ public class Main {
 
         //Adaptive Threshold
         Mat imgAdaptiveThreshold = new Mat();
-        Imgproc.adaptiveThreshold(imgThreshold, imgAdaptiveThreshold, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 75, 50);
+        Imgproc.adaptiveThreshold(imgThreshold, imgAdaptiveThreshold, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, 99, 50);
         Imgcodecs.imwrite("preprocess/5_imgAdaptiveThreshold.png", imgAdaptiveThreshold);
 
 
@@ -148,11 +156,14 @@ public class Main {
         Imgcodecs.imwrite("preprocess/adaptive_threshold2.png", imgAdaptiveThreshold);
 
 
-        File imageFile = new File("preprocess/gaussian_blur.png");
+        grayscale(path);
+
+
+        File imageFile = new File("preprocess/grayscale.tiff");
         ITesseract instance = new Tesseract();
         instance.setDatapath(TESS_DATA);
         instance.setLanguage("tur");
-        //instance.setTessVariable("tessedit_char_whitelist", "acekopxyABCEHKMOPTXY0123456789");
+
         String result = null;
         try {
             result = instance.doOCR(imageFile);
@@ -161,7 +172,7 @@ public class Main {
         }
         rString = result;
         as = result;
-        //System.out.println(result);
+        System.out.println(result);
 
 //        String res = new Main().extractTextFromImage(imgAdaptiveThreshold);
 //        System.out.println(res);
@@ -176,14 +187,64 @@ public class Main {
         splitter();
 
     }
-    static Locale enLocale = Locale.forLanguageTag("en_US");
+    public void grayscale(String path){
+        BufferedImage img = null;
+        File f = null;
+
+        //read image
+        try{
+            f = new File(path);
+            img = ImageIO.read(f);
+        }catch(IOException e){
+            System.out.println(e);
+        }
+
+        //get image width and height
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        //convert to grayscale
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                int p = img.getRGB(x,y);
+
+                int a = (p>>24)&0xff;
+                int r = (p>>16)&0xff;
+                int g = (p>>8)&0xff;
+                int b = p&0xff;
+
+                //calculate average
+                int avg = (r+g+b)/3;
+
+                //replace RGB value with avg
+                p = (a<<24) | (avg<<16) | (avg<<8) | avg;
+
+                img.setRGB(x, y, p);
+            }
+        }
+
+
+        //write image
+        try{
+            f = new File("preprocess/grayscale.tiff");
+            ImageIO.write(img, "tiff", f);
+
+        }catch(IOException e){
+            System.out.println(e);
+        }
+    }
 
 
     //String paraçalama işi burada dönüyor
     public void splitter() {
+
+        //Şirket Adı
+
+
+
         //Tarih splitter
-        //sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
-       // System.out.println(sTarih);
+        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
+        System.out.println("Tarih: "+sTarih);
 
 
         //Fiş no splitter
