@@ -164,7 +164,7 @@ public class Main {
         grayscale(path);
 
 
-        File imageFile = new File("preprocess/Gray.png");
+        File imageFile = new File("preprocess/grayscale.tiff");
         ITesseract instance = new Tesseract();
         instance.setDatapath(TESS_DATA);
         instance.setLanguage("tur");
@@ -264,15 +264,16 @@ public class Main {
             System.out.println("fiş no :" + sFisNo);
         }
 
+        //Şirket adını Stringten çektiğimiz kısım
         sirket = regexChecker("^.*\\r?\\n(.*)", as);
         String lines[] = sirket.split("\\r?\\n");
         if (sirket.contains("tesekkurler")){
             sirket = lines[1];
-        } else if (sirket.contains("a.s")) {
+        } else {
             if (lines[0].contains("a.s")){
                 sirket = lines[0];
             }else {
-                sirket = lines[1];
+                sirket = sirket;
             }
         }
 
