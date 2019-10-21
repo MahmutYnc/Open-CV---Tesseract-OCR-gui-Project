@@ -30,47 +30,6 @@ public class GuiClass extends javax.swing.JFrame {
 
     public GuiClass() {
         initComponents();
-
-        gorselButon.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-
-                JFileChooser file = new JFileChooser();
-                String pathName = "C:\\Users\\Mahmut\\IdeaProjects\\openCvOCR\\img";
-                if (null == pathName) {
-                    pathName = ""; //$NON-NLS-1$
-                }
-                file.setCurrentDirectory(new File(pathName));
-
-                //filter the files
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("*.Images", "jpg","gif","png");
-                file.addChoosableFileFilter(filter);
-                int result = file.showSaveDialog(null);
-                //if the user click on save in Jfilechooser
-                if(result == JFileChooser.APPROVE_OPTION){
-                    File selectedFile = file.getSelectedFile();
-                    path = selectedFile.getAbsolutePath();
-                    gorsel.setIcon(ResizeImage(path));
-
-
-                }
-                //if the user click on save in Jfilechooser
-                else if(result == JFileChooser.CANCEL_OPTION){
-                    System.out.println("No File Selected");
-                }
-
-                //System.out.println(path);
-                m.tesseract(path);
-                textSetter(m.rString);
-
-            }
-
-        });
-
-
-
-
-
     }
 
     /**
@@ -211,23 +170,23 @@ public class GuiClass extends javax.swing.JFrame {
 
         table.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null},
-                        {null, null, null, null, null, null}
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null},
+                        {null, null, null, null, null}
                 },
                 new String [] {
-                        "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"
+                        "Şirket Adı", "Fiş No", "Tarih", "Ürün", "Toplam Fiyat"
                 }
         ));
         table.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -276,7 +235,41 @@ public class GuiClass extends javax.swing.JFrame {
 
     private void gorselButonActionPerformed(java.awt.event.ActionEvent evt) {
 
-        // TODO add your handling code here:
+        gorselButon.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser file = new JFileChooser();
+                String pathName = "C:\\Users\\Mahmut\\IdeaProjects\\openCvOCR\\img";
+                if (null == pathName) {
+                    pathName = ""; //$NON-NLS-1$
+                }
+                file.setCurrentDirectory(new File(pathName));
+
+                //filter the files
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("*.Images", "jpg","gif","png");
+                file.addChoosableFileFilter(filter);
+                int result = file.showSaveDialog(null);
+                //if the user click on save in Jfilechooser
+                if(result == JFileChooser.APPROVE_OPTION){
+                    File selectedFile = file.getSelectedFile();
+                    path = selectedFile.getAbsolutePath();
+                    gorsel.setIcon(ResizeImage(path));
+
+
+                }
+                //if the user click on save in Jfilechooser
+                else if(result == JFileChooser.CANCEL_OPTION){
+                    System.out.println("No File Selected");
+                }
+
+                //System.out.println(path);
+                m.tesseract(path);
+                textSetter(m.rString);
+
+            }
+
+        });
 
     }
 
@@ -324,7 +317,6 @@ public class GuiClass extends javax.swing.JFrame {
             public void mouseClicked(MouseEvent e) {
                 int col = table.columnAtPoint(e.getPoint());
                 String name = table.getColumnName(col);
-                System.out.println("asdasdkasdkasd");
                 System.out.println("Column index selected " + col + " " + name);
             }
         });
@@ -359,7 +351,7 @@ public class GuiClass extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable table;
+    public javax.swing.JTable table;
     private javax.swing.JTextField tarihField;
     private javax.swing.JTextArea text;
     // End of variables declaration
