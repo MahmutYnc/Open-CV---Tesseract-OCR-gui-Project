@@ -104,6 +104,8 @@ public class Main {
     }
     String sTarih;
     String sFisNo;
+    String sToplam1;
+    String sToplam;
     ArrayList<String> urun = null;
 
     String as;
@@ -130,13 +132,16 @@ public class Main {
         Mat img = Imgcodecs.imread(path);
         Imgcodecs.imwrite("preprocess/True_Image.png", img);
         //grayScale
+        /*
         Mat imgGray = new Mat();
         Imgproc.cvtColor(img, imgGray, Imgproc.COLOR_BGR2GRAY);
         Imgcodecs.imwrite("preprocess/Gray.png", imgGray);
+
         //Gaussian Blur
         Mat imgGaussianBlur = new Mat();
         Imgproc.GaussianBlur(imgGray,imgGaussianBlur,new Size(3, 3),0);
         Imgcodecs.imwrite("preprocess/gaussian_blur.png", imgGaussianBlur);
+
 /*      //Sobel
         Mat imgSobel = new Mat();
         Imgproc.Sobel(imgGaussianBlur, imgSobel, -1, 1, 0);
@@ -146,6 +151,7 @@ public class Main {
     Sobel bak moruk
 */
         //Step5
+        /*
         Mat imgThreshold = new Mat();
         Imgproc.threshold(imgGaussianBlur, imgThreshold, 0, 255,  CV_THRESH_OTSU + CV_THRESH_BINARY);
         Imgcodecs.imwrite("preprocess/5_imgThreshold.png", imgThreshold);
@@ -159,7 +165,7 @@ public class Main {
 //bu bizim eskisi
         Imgproc.adaptiveThreshold(imgGaussianBlur, imgAdaptiveThreshold, 255, CV_ADAPTIVE_THRESH_MEAN_C ,CV_THRESH_BINARY, 79, 27);
         Imgcodecs.imwrite("preprocess/adaptive_threshold2.png", imgAdaptiveThreshold);
-
+        */
 
         grayscale(path);
 
@@ -246,19 +252,17 @@ public class Main {
     //String paraçalama işi burada dönüyor
     public void splitter() {
 
-        //Şirket Adı
-
 
 
         //Tarih splitter
-        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
+        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}|\\s*(3[01]|[12][0-9]|0?[1-9])\\. (1[012]|0?[1-9]) \\. ((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
         System.out.println("Tarih: "+sTarih);
 
 
         //Fiş no splitter
         as = clearTurkishChars(as);
 
-        sFisNo = regexChecker("(.*?.*:?fıs.*)", as);
+        sFisNo = regexChecker("(.*?.*:?fıs.*)|(.*?.*:?fis.*)|(.*?.*:?fıs.*)|(.*?.*:?fiis.*)|(.*?.*:?fııs.*)", as);
         if (sFisNo != null){
             sFisNo = regexChecker("[0-9]{4}", sFisNo);
             System.out.println("fiş no :" + sFisNo);
@@ -267,10 +271,10 @@ public class Main {
         //Şirket adını Stringten çektiğimiz kısım
         sirket = regexChecker("^.*\\r?\\n(.*)", as);
         String lines[] = sirket.split("\\r?\\n");
-        if (sirket.contains("tesekkurler")){
+        if (sirket.contains("tesekk")){
             sirket = lines[1];
         } else {
-            if (lines[0].contains("a.s")){
+            if (lines[0].contains("a.s") || lines[0].contains("market")){
                 sirket = lines[0];
             }else {
                 sirket = sirket;
@@ -279,10 +283,15 @@ public class Main {
 
         System.out.println(sirket);
 
+        //Toplam
+
+        sToplam1 = regexChecker("TOPLAM+ \\*[0-9]{1,4}, [0-9]{2}|TOPLAM+ \\*[0-9]{1,4},[0-9]{2}|TOPLAM+ \\*[0-9]{1,4} , [0-9]{2}|TOP\\s+ \\*[0-9]{1,4},[0-9]{2}",as);
+        sToplam = regexChecker("[0-9]{1,4}, [0-9]{2}|[0-9]{1,4},[0-9]{2}|[0-9]{1,4} , [0-9]{2}||[0-9]{1,4} ,[0-9]{2}" ,sToplam1);
+        System.out.println("Toplam : " + sToplam);
 
         //Urun
-        regexer("(.*?.*:?x08.*)|(.*?.*:?408.*)|(.*?.*:?(...)%08.*)|(.*?.*:?X08.*)|(.*?.*:?\\*08.*)|(.*?.*:?x18.*)|(.*?.*:?418.*)|(.*?.*:?%18.*)|(.*?.*:?X18.*)|" +
-                "(.*?.*:?\\*18.*)|(.*?.*:?x01.*)|(.*?.*:?401.*)|(.*?.*:?%01.*)|(.*?.*:?X01.*)|(.*?.*:?\\*01.*)|(.*?.*:?x8.*)|(.*?.*:?48.*)|(.*?.*:?%8.*)|(.*?.*:?X8.*)|(.*?.*:?\\*8.*)", as );
+        regexer("(.*?.*:?(...)x08.*)|(.*?.*:?(...)408.*)|(.*?.*:?(...)%08.*)|(.*?.*:?(...)X08.*)|(.*?.*:?(...)\\s\\*08.*)|(.*?.*:?(...)x18.*)|(.*?.*:?(...)\\s418\\s.*)| (.*?.*:?(...)\\s38.*)|(.*?.*:?(...)%18.*)|(.*?.*:?(...)X18.*)|" +
+                "(.*?.*:?(...)\\*18.*)|(.*?.*:?(...)x01.*)|(.*?.*:?(...)401.*)|(.*?.*:?(...)%01.*)|(.*?.*:?(...)X01.*)|(.*?.*:?(...)\\*01\\s.*)|(.*?.*:?(...)x8.*)|(.*?.*:?(...)\\s48\\s.*)|(.*?.*:?(...)%8.*)|(.*?.*:?(...)X8.*)|(.*?.*:?(...)\\*8\\s.*)|(.*?.*:?(...)\\s08\\s.*)|(.*?.*:?(...)\\s78\\s.*)", as );
 
         rtun.forEach((n) -> System.out.println(n));
         //KDV
@@ -329,7 +338,7 @@ public class Main {
                 //System.out.println( regexMatcher.group().trim() );
                 returner = regexMatcher.group().trim();
                 // You can get the starting and ending indexs
-            }
+        }
         }
 
         System.out.println();

@@ -36,7 +36,7 @@ public class GuiClass extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 JFileChooser file = new JFileChooser();
-                String pathName = "C:\\Users\\Mahmut\\IdeaProjects\\openCvOCR\\img";
+                String pathName = "C:\\Users\\Samet\\Desktop\\Fişler";
                 if (null == pathName) {
                     pathName = ""; //$NON-NLS-1$
                 }
