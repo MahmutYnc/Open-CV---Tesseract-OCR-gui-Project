@@ -101,7 +101,10 @@ public class Main {
         g = new GuiClass();
         g.anafonk();
 
+
     }
+
+
     String sTarih;
     String sFisNo;
     ArrayList<String> urun = null;
@@ -112,9 +115,7 @@ public class Main {
 
     //[a-zA-Z]+[0-9]{2}
 
-    public void scalingOfImage() {
 
-    }
 
     public void tesseract(String path) {
 

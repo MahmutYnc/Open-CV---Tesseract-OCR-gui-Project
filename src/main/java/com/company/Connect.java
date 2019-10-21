@@ -1,23 +1,15 @@
 package main.java.com.company;
 
-
-import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class Connect {
 
-    public GuiClass g;
 
     public static Connection c;
 
     public void connectDatabase() {
-        try {
-            c = DriverManager.getConnection("jdbc:mysql://localhost:3306/billsdb?useUnicode=true&useLegacyDatetimeCode=false&serverTimezone=Turkey",
-                    "root", "");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        c = getConnection();
         try {
             String query;
             Statement stmt = c.createStatement();
@@ -34,7 +26,6 @@ public class Connect {
         } catch (Exception e) {
             System.out.println(e);
         }
-
     }
 
     public Connection getConnection()
@@ -52,17 +43,47 @@ public class Connect {
         }
     }
 
-        public ArrayList<ForTable> urunArrayList() {
+        public ArrayList<ForTable> urunArrayList(int index) {
         ArrayList<ForTable> mList = new ArrayList<>();
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/billsdb?useUnicode=true&useLegacyDatetimeCode=false&serverTimezone=Turkey",
-                    "root", "");
-            String query1 = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice from bills, company, billtable where" +
+            Connection con = getConnection();
+            String queryDef = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice from bills, company, billtable where" +
                     " billtable.billsID = bills.ID AND billtable.companyID = company.ID ORDER BY bills.billNo";
+            String queryCom = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice from bills, company, billtable where" +
+                    " billtable.billsID = bills.ID AND billtable.companyID = company.ID ORDER BY company.companyName";
+            String queryDate = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice FROM bills, company, billtable WHERE" +
+                    " billtable.billsID = bills.ID AND billtable.companyID = company.ID ORDER BY `bills`.`date` ASC";
+            String queryProd = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice FROM bills, company, billtable WHERE" +
+                    " billtable.billsID = bills.ID AND billtable.companyID = company.ID ORDER BY `bills`.`Products` ASC";
+            String queryTot = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice FROM bills, company, billtable WHERE" +
+                    " billtable.billsID = bills.ID AND billtable.companyID = company.ID ORDER BY `bills`.`totalPrice` ASC";
+
             Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery(query1);
+            ResultSet rs = statement.executeQuery(queryDef);
+            switch (index) {
+                case 0:
+                    rs = statement.executeQuery(queryCom);
+                    break;
+
+                case 1:
+                    rs = statement.executeQuery(queryDef);
+                    break;
+
+                case 2:
+                    rs = statement.executeQuery(queryDate);
+                    break;
+
+                case 3:
+                    rs = statement.executeQuery(queryProd);
+                    break;
+
+                case 4:
+                    rs = statement.executeQuery(queryTot);
+                    break;
+                default:
+                    rs = statement.executeQuery(queryDef);
+            }
+
             ForTable urun;
             while (rs.next()) {
                 urun = new ForTable(rs.getString(1), rs.getInt(2), rs.getDate(3),
@@ -75,21 +96,8 @@ public class Connect {
         }
         return mList;
     }
-    public void showOnTable() {
-        ArrayList<ForTable> tableList = urunArrayList();
-        DefaultTableModel tableModel = (DefaultTableModel) g.table.getModel();
 
-        Object[] row = new Object[5];
-        for (int i = 0; i < tableList.size(); i++) {
-            row[0] = tableList.get(i).getCompanyName();
-            row[1] = tableList.get(i).getDate();
-            row[2] = tableList.get(i).getBillNo();
-            row[3] = tableList.get(i).getProducts();
-            row[4] = tableList.get(i).getTotalPrice();
-            tableModel.addRow(row);
-        }
 
-    }
 
 
 }

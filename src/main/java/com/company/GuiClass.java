@@ -1,13 +1,16 @@
 package main.java.com.company;
 
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,6 +19,7 @@ import java.io.File;
 public class GuiClass extends javax.swing.JFrame {
 
     Main m = new Main();
+    Connect connect = new Connect();
 
     /**
      * Creates new form GuiClass
@@ -30,6 +34,24 @@ public class GuiClass extends javax.swing.JFrame {
 
     public GuiClass() {
         initComponents();
+    }
+
+    public void showOnTable(int index) {
+        ArrayList<ForTable> tableList = null;
+               tableList = connect.urunArrayList(index);
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        tableModel.setRowCount(0);
+        Object[] row = new Object[5];
+        for (int i = 0; i < tableList.size(); i++) {
+            row[0] = tableList.get(i).getCompanyName();
+            row[1] = tableList.get(i).getBillNo();
+            row[2] = tableList.get(i).getDate();
+            row[3] = tableList.get(i).getProducts();
+            row[4] = tableList.get(i).getTotalPrice();
+            tableModel.addRow(row);
+        }
+        table.setModel(tableModel);
+
     }
 
     /**
@@ -189,9 +211,14 @@ public class GuiClass extends javax.swing.JFrame {
                         "Şirket Adı", "Fiş No", "Tarih", "Ürün", "Toplam Fiyat"
                 }
         ));
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableMouseClicked(evt);
+
+        table.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int col = table.columnAtPoint(e.getPoint());
+                String name = table.getColumnName(col);
+                System.out.println("Column index selected " + col + " " + name);
+                showOnTable(col);
             }
         });
         jScrollPane3.setViewportView(table);
@@ -222,8 +249,12 @@ public class GuiClass extends javax.swing.JFrame {
                                 .addContainerGap())
         );
 
+
         pack();
+
     }// </editor-fold>
+
+    //private void table
 
     private void fisAraButonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
@@ -231,13 +262,10 @@ public class GuiClass extends javax.swing.JFrame {
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:
+
     }
 
     private void gorselButonActionPerformed(java.awt.event.ActionEvent evt) {
-
-        gorselButon.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
 
                 JFileChooser file = new JFileChooser();
                 String pathName = "C:\\Users\\Mahmut\\IdeaProjects\\openCvOCR\\img";
@@ -266,10 +294,8 @@ public class GuiClass extends javax.swing.JFrame {
                 //System.out.println(path);
                 m.tesseract(path);
                 textSetter(m.rString);
+                showOnTable(1);
 
-            }
-
-        });
 
     }
 
@@ -279,6 +305,7 @@ public class GuiClass extends javax.swing.JFrame {
 
 
     public void anafonk() {
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -311,16 +338,6 @@ public class GuiClass extends javax.swing.JFrame {
             }
         });
 
-        // listener
-        table.getTableHeader().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int col = table.columnAtPoint(e.getPoint());
-                String name = table.getColumnName(col);
-                System.out.println("Column index selected " + col + " " + name);
-            }
-        });
-
 
 
 
@@ -335,7 +352,7 @@ public class GuiClass extends javax.swing.JFrame {
         return image;
     }
 
-    //Okunan metini textfield a atamar
+    //Okunan metini textarea a atama yapar
     public void textSetter (String string) {
         text.setText(string);
     }
