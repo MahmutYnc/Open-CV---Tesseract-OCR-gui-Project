@@ -5,10 +5,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -28,12 +25,14 @@ public class GuiClass extends javax.swing.JFrame {
 
 
 
+
     public String path;
 
 //In response to a button click:
 
     public GuiClass() {
         initComponents();
+
     }
 
     public void showOnTable(int index) {
@@ -145,6 +144,11 @@ public class GuiClass extends javax.swing.JFrame {
         jLabel2.setText("Tarih : ");
 
         firmaField.setText("");
+        firmaField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                firmaFieldKeyPressed(evt);
+            }
+        });
 
         tarihField.setText("");
 
@@ -265,6 +269,24 @@ public class GuiClass extends javax.swing.JFrame {
 
     }
 
+    private void firmaFieldKeyPressed(java.awt.event.KeyEvent evt) {
+        switch (evt.getKeyCode()){
+            case KeyEvent.VK_BACK_SPACE:
+                break;
+            case KeyEvent.VK_ENTER:
+                firmaField.setText(firmaField.getText());
+                break;
+            default:
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        String txt = firmaField.getText();
+                        autoComplete(txt);
+                    }
+                });
+        }
+    }
+
     private void gorselButonActionPerformed(java.awt.event.ActionEvent evt) {
 
                 JFileChooser file = new JFileChooser();
@@ -355,6 +377,26 @@ public class GuiClass extends javax.swing.JFrame {
     //Okunan metini textarea a atama yapar
     public void textSetter (String string) {
         text.setText(string);
+    }
+
+    public void autoComplete (String text) {
+        ArrayList name = connect.getCompName();
+        String complete = "";
+        int start = text.length();
+        int last = text.length();
+
+        for (int i = 0; i < name.size(); i++) {
+            if (name.get(i).toString().startsWith(text)) {
+                complete = name.get(i).toString();
+                last = complete.length();
+                break;
+            }
+        }
+        if ( last > start) {
+            firmaField.setText(complete);
+            firmaField.setCaretPosition(last);
+            firmaField.moveCaretPosition(start);
+        }
     }
 
     // Variables declaration - do not modify

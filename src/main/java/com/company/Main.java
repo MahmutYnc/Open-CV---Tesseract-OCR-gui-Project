@@ -293,6 +293,9 @@ public class Main {
 //        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", rString);
 //        sKDV = regexChecker("[0-9]{2}", sKDV);
 //        System.out.println(sKDV);
+
+
+        //checkDB();
     }
 
     public static String clearTurkishChars(String str) {

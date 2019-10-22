@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Connect {
 
-
+    ArrayList compName = new ArrayList();
     public static Connection c;
 
     public void connectDatabase() {
@@ -26,6 +26,33 @@ public class Connect {
         } catch (Exception e) {
             System.out.println(e);
         }
+
+    }
+
+    public ArrayList getCompName() {
+
+        c = getConnection();
+        try {
+            Statement statement = c.createStatement();
+            String query = "Select * from company where 1";
+            ResultSet rs = statement.executeQuery(query);
+
+            while (rs.next()) {
+
+                String name = rs.getString("companyName");
+
+                compName.add(name);
+            }
+
+            rs.close();
+            statement.close();
+            c.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return compName;
     }
 
     public Connection getConnection()
@@ -90,12 +117,157 @@ public class Connect {
                         rs.getString(4), rs.getInt(5));
                 mList.add(urun);
             }
-
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return mList;
     }
+
+    public void checkDB (String companyName, String date, int billNo, String product, int totalPrice) throws SQLException {
+        int companyID = 0;
+        int billsID = 0, billtable = 0;
+
+        Connection connection = getConnection();
+
+        String query = "Select ID From company where companyName = " + companyName;
+        Statement statement = connection.createStatement();
+        ResultSet rs = null;
+            rs = statement.executeQuery(query);
+
+        while (rs.next()) {
+            companyID = rs.getInt(1);
+        }
+
+        statement.close();
+        rs.close();
+
+
+
+        if (companyID == 0) {
+
+            query = "SELECT `ID` FROM `company` WHERE 1";
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            while (rs.next()) {
+                companyID = rs.getInt(1);
+            }
+
+            statement.close();
+            rs.close();
+
+            query = "SELECT `ID` FROM `bills` WHERE 1";
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            while (rs.next()) {
+                billsID = rs.getInt(1);
+            }
+
+            statement.close();
+            rs.close();
+
+            query = "SELECT `ID` FROM `billtable` WHERE 1";
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            while (rs.next()) {
+                billtable = rs.getInt(1);
+            }
+
+            statement.close();
+            rs.close();
+
+            //şirkettablosuna ekleme yapıldı
+            query = "INSERT INTO `company` (`ID`, `companyName`) VALUES (?, ?)";
+            PreparedStatement pst = connection.prepareStatement(query);
+
+            companyID += 3;
+
+            pst.setInt(1, companyID);
+            pst.setString(2, companyName);
+            pst.executeUpdate();
+
+            pst.close();
+
+            //fiş tablosna ekleme yap
+            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?)";
+            pst =connection.prepareStatement(query);
+
+            billsID += 3;
+
+            pst.setInt(1, billsID);
+            pst.setDate(2, Date.valueOf(date));
+            pst.setInt(3, billNo);
+            pst.setString(4, product);
+            pst.setInt(5, totalPrice);
+
+            pst.executeUpdate();
+            pst.close();
+
+            //ekelenenlere göre billtable a ekeleme yapma
+            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?)";
+            pst = connection.prepareStatement(query);
+
+            billtable += 3;
+
+            pst.setInt(1, billtable);
+            pst.setInt(2, companyID);
+            pst.setInt(3, billsID);
+
+            pst.executeUpdate();
+            pst.close();
+
+        }else {
+
+            query = "SELECT `billsID` FROM `billtable` WHERE companyID = " + companyID;
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            while (rs.next()) {
+                billsID = rs.getInt(1);
+            }
+
+            statement.close();
+            rs.close();
+
+
+            PreparedStatement pst;
+
+            //fiş tablosna ekleme yap
+            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?)";
+            pst =connection.prepareStatement(query);
+
+            billsID += 3;
+
+            pst.setInt(1, billsID);
+            pst.setDate(2, Date.valueOf(date));
+            pst.setInt(3, billNo);
+            pst.setString(4, product);
+            pst.setInt(5, totalPrice);
+
+            pst.executeUpdate();
+            pst.close();
+
+            //ekelenenlere göre billtable a ekeleme yapma
+            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?)";
+            pst = connection.prepareStatement(query);
+
+            billtable += 3;
+
+            pst.setInt(1, billtable);
+            pst.setInt(2, companyID);
+            pst.setInt(3, billsID);
+
+            pst.executeUpdate();
+            pst.close();
+
+        }
+
+        //bundan önce tesseractin texti almış olması lazım yani parse işlemlerinen sonra çlışaacak Main classının içindeki
+
+        //bundan sonra show on table çalışması lazım
+
+
+    }
+
 
 
 
