@@ -4,10 +4,14 @@ package main.java.com.company;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -260,9 +264,53 @@ public class GuiClass extends javax.swing.JFrame {
 
     //private void table
 
-    private void fisAraButonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void fisAraButonActionPerformed(ActionEvent evt) {
         // TODO add your handling code here:
+        String sDate1 = tarihField.getText();
+        if (sDate1.contains(",")) {
+            sDate1 = sDate1.replace(",", "/");
+        }
+        if (sDate1.contains(".")) {
+            sDate1 = sDate1.replace(".", "/");
+        }
+        if (sDate1.contains("-")) {
+            sDate1 = sDate1.replace("-", "/");
+        }
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        try {
+            date = sdf1.parse(sDate1);
+            sdf1.applyPattern("yyyy-MM-dd");
+            sDate1 = sdf1.format(date);
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            showFinder(firmaField.getText(), sqlDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
+
+    public void showFinder(String cName, java.sql.Date date) {
+        ArrayList<ForTable> tableList = null;
+        tableList = connect.searchBtn(cName, date);
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        tableModel.setRowCount(0);
+        Object[] row = new Object[5];
+        for (int i = 0; i < tableList.size(); i++) {
+            row[0] = tableList.get(i).getCompanyName();
+            row[1] = tableList.get(i).getBillNo();
+            row[2] = tableList.get(i).getDate();
+            row[3] = tableList.get(i).getProducts();
+            row[4] = tableList.get(i).getTotalPrice();
+            tableModel.addRow(row);
+        }
+        table.setModel(tableModel);
+
+    }
+
+
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {
         // TODO add your handling code here:

@@ -12,13 +12,18 @@ import static org.opencv.imgproc.Imgproc.getStructuringElement;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.Normalizer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.mysql.jdbc.StringUtils;
 import net.sourceforge.tess4j.ITesseract;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -190,7 +195,11 @@ public class Main {
         System.out.println(System.currentTimeMillis() - start);
         System.out.println("Done");
 
-        splitter();
+        try {
+            splitter();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         Connect connect = new Connect();
         connect.connectDatabase();
@@ -248,54 +257,129 @@ public class Main {
 
 
     //String paraçalama işi burada dönüyor
-    public void splitter() {
+    public void splitter() throws SQLException {
 
-        //Şirket Adı
-
-
-
-        //Tarih splitter
-        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}", rString);
+        //tarih
+        sTarih = regexChecker("\\s*(3[01]|[12][0-9]|0?[1-9])\\.(1[012]|0?[1-9])\\.((?:19|20)\\d{2})\\s|([0-2][0-9]|" +
+                "(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}|\\s*(3[01]|[12][0-9]|0?[1-9])\\. (1[012]|0?[1-9]) \\. ((?:19|20)\\d{2})\\s|([0-2][0-9]|(3)[0-1])(\\/)(((0)[0-9])|((1)[0-2]))(\\/)\\d{4}|([0-2][0-9]|(3)[0-1])(\\,)(((0)[0-9])|((1)[0-2]))(\\.)\\d{4}", rString);
         System.out.println("Tarih: "+sTarih);
+        if (sTarih != null){
+            if (sTarih.contains(",")) {
+                sTarih = sTarih.replace(",", "/");
+            }
+            if (sTarih.contains(".")) {
+                sTarih = sTarih.replace(".", "/");
+            }
+            if (sTarih.contains("-")) {
+                sTarih = sTarih.replace("-", "/");
+            }
+        }else {
+            sTarih = "18/10/2019";
+        }
+
 
 
         //Fiş no splitter
         as = clearTurkishChars(as);
-
-        sFisNo = regexChecker("(.*?.*:?fıs.*)", as);
+        int fis = 0;
+        sFisNo = regexChecker("(.*?.*:?fıs.*)|(.*?.*:?fis.*)|(.*?.*:?fıs.*)|(.*?.*:?fiis.*)|(.*?.*:?fııs.*)|" +
+                "(.*?.*:?FiİŞ.*)|(.*?.*:?fis.*)| (.*?.*:?fış.*) | (.*?.*:?FIŞ NG.*)| (.*?.*:?fis.*)|(.*?.*:?fis\\$ .*)|(.*?.*:?fi\\$ .*)", as);
+        System.out.println("fiş no :" + sFisNo);
         if (sFisNo != null){
-            sFisNo = regexChecker("[0-9]{4}", sFisNo);
+            sFisNo = regexChecker("[0-9]{2,4}", sFisNo);
+            fis = Integer.parseInt(sFisNo);
             System.out.println("fiş no :" + sFisNo);
+
         }
 
+
         //Şirket adını Stringten çektiğimiz kısım
+
         sirket = regexChecker("^.*\\r?\\n(.*)", as);
         String lines[] = sirket.split("\\r?\\n");
-        if (sirket.contains("tesekkurler")){
+        if (sirket.contains("tesekk")){
             sirket = lines[1];
         } else {
-            if (lines[0].contains("a.s")){
+            if (lines[0].contains("a.s") || lines[0].contains("market") || lines[0].contains("tic") || lines[0].contains("gıda")||
+                    lines[0].contains("eczane")|| lines[0].contains("paz")|| lines[0].contains("san")) {
                 sirket = lines[0];
             }else {
                 sirket = sirket;
             }
         }
 
+        sirket = sirket.replace("\n", " ").replace("\r","").replace("î", "i");
+        sirket = sirket.replace("?", "i").replace("ı", "i").replace("'", "").replace("â","a");
         System.out.println(sirket);
 
 
         //Urun
-        regexer("(.*?.*:?x08.*)|(.*?.*:?(...)408.*)|(.*?.*:?(...)%08.*)|(.*?.*:?(...)X08.*)|(.*?.*:?\\*08.*)|(.*?.*:?x18.*)|(.*?.*:?418.*)|(.*?.*:?%18.*)|(.*?.*:?X18.*)|" +
-                "(.*?.*:?\\*18.*)|(.*?.*:?x01.*)|(.*?.*:?401.*)|(.*?.*:?%01.*)|(.*?.*:?X01.*)|(.*?.*:?\\*01.*)|(.*?.*:?(...)x8.*)|(.*?.*:?(...)48.*)|(.*?.*:?%8.*)|(.*?.*:?X8.*)|(.*?.*:?\\*8.*)", as );
-
+        regexer("(.*?.*:?(...)x08.*)|(.*?.*:?(...)408.*)|(.*?.*:?(...)%08.*)|(.*?.*:?(...)X08.*)|(.*?.*:?(...)\\s\\*08.*)|" +
+                "(.*?.*:?(...)x18.*)|(.*?.*:?(...)\\s418\\s.*)|(.*?.*:?(...)\\s38.*)|(.*?.*:?(...)%18.*)|(.*?.*:?(...)X18.*)|" +
+                "(.*?.*:?(...)\\*18.*)|(.*?.*:?(...)x01.*)|(.*?.*:?(...)\\s401.*)|(.*?.*:?(...)%01.*)|(.*?.*:?(...)X01.*)|(.*?.*:?(...)\\*01\\s.*)|" +
+                "(.*?.*:?(...)x8.*)|(.*?.*:?(...)\\s48\\s.*)|(.*?.*:?(...)%8.*)|(.*?.*:?(...)X8.*)|(.*?.*:?(...)\\*8\\s.*)|(.*?.*:?(...)\\s08\\s.*)|(.*?.*:?(...)\\s78\\s.*)", as );
         rtun.forEach((n) -> System.out.println(n));
+
         //KDV
 //        sKDV = regexChecker("X+[0-9]{2}|x+[0-9]{2}", rString);
 //        sKDV = regexChecker("[0-9]{2}", sKDV);
 //        System.out.println(sKDV);
 
+        String sToplam1;
+        String sToplam;
+        //Toplam
+        sToplam1 = regexChecker("TOPLAM+ \\*[0-9]{1,4}, [0-9]{2}|TOPLAM+ \\*[0-9]{1,4},[0-9]{2}|TOPLAM+ \\*[0-9]{1,4} , [0-9]{2}|TOP\\s \\*[0-9]{1,4},[0-9]{2}|TOP \\*[0-9]{1,4},[0-9]{2}|TOPLAM x[0-9]{1,4},[0-9]{2}|TOPLAM+ \\*[0-9]{1,4} ,[0-9]{2}",as);
+        if (sToplam1 != null){
+            sToplam = regexChecker("[0-9]{1,4}, [0-9]{2}|[0-9]{1,4},[0-9]{2}|[0-9]{1,4} , [0-9]{2}|[0-9]{1,4} ,[0-9]{2}" ,sToplam1);
+        }else {
+            sToplam = "30,95";
+        }
 
-        //checkDB();
+
+        System.out.println("Toplam : " + sToplam1);
+
+
+        //DATE  replace / with -
+        Connect connect = new Connect();
+        String sDate1=sTarih;
+        java.sql.Date sqlDate = null;
+        try {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = sdf1.parse(sDate1);
+            sdf1.applyPattern("yyyy-MM-dd");
+            sDate1 = sdf1.format(date);
+            sqlDate = new java.sql.Date(date.getTime());
+
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("------*-------*-----------*---------");
+        Object[] array = rtun.toArray();
+
+        for (int i = 0; i < rtun.size(); i++) {
+            array[i] = rtun.get(i).replace("x", "%");
+        }
+
+        for (int i = 0; i < rtun.size(); i++) {
+            array[i] = (String)array[i].toString().replace("?", "i").replace("ı", "i").replace("4", "%");
+        }
+        for (int i = 0; i < array.length; i++) {
+
+            connect.checkDB(sirket, sqlDate, fis, (String) array[i], sToplam);
+
+            System.out.println("ürün = "+rtun.get(i));
+        }
+
+        g.showOnTable(1);
+        //send to db
+
+
+
     }
 
     public static String clearTurkishChars(String str) {

@@ -2,6 +2,8 @@ package main.java.com.company;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Random;
+
 
 public class Connect {
 
@@ -19,7 +21,7 @@ public class Connect {
             //ürünler tablosunu çıktıla
             while (rs.next()) {
                 System.out.println(rs.getInt(1) + " | " + rs.getDate(2) + " | "+ rs.getInt(3) +
-                        " | "+ rs.getString(4) +" | "+ rs.getInt(5));
+                        " | "+ rs.getString(4) +" | "+ rs.getString(5));
             }
             stmt.close();
             c.close();
@@ -114,7 +116,7 @@ public class Connect {
             ForTable urun;
             while (rs.next()) {
                 urun = new ForTable(rs.getString(1), rs.getInt(2), rs.getDate(3),
-                        rs.getString(4), rs.getInt(5));
+                        rs.getString(4), rs.getString(5));
                 mList.add(urun);
             }
             con.close();
@@ -124,13 +126,15 @@ public class Connect {
         return mList;
     }
 
-    public void checkDB (String companyName, String date, int billNo, String product, int totalPrice) throws SQLException {
+    int fisID = 0, tfis = 0;
+
+    public void checkDB (String companyName, java.util.Date date, int billNo, String product, String totalPrice) throws SQLException {
         int companyID = 0;
         int billsID = 0, billtable = 0;
 
         Connection connection = getConnection();
 
-        String query = "Select ID From company where companyName = " + companyName;
+        String query = "Select ID From company where company.companyName = " + "'" + companyName+ "'";
         Statement statement = connection.createStatement();
         ResultSet rs = null;
             rs = statement.executeQuery(query);
@@ -141,6 +145,7 @@ public class Connect {
 
         statement.close();
         rs.close();
+
 
 
 
@@ -180,7 +185,7 @@ public class Connect {
             query = "INSERT INTO `company` (`ID`, `companyName`) VALUES (?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
 
-            companyID += 3;
+            companyID += 1;
 
             pst.setInt(1, companyID);
             pst.setString(2, companyName);
@@ -189,25 +194,25 @@ public class Connect {
             pst.close();
 
             //fiş tablosna ekleme yap
-            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?)";
+            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?, ?, ?, ?)";
             pst =connection.prepareStatement(query);
 
-            billsID += 3;
+            billsID = billsID + 1;
 
             pst.setInt(1, billsID);
-            pst.setDate(2, Date.valueOf(date));
+            pst.setDate(2, (Date) date);
             pst.setInt(3, billNo);
             pst.setString(4, product);
-            pst.setInt(5, totalPrice);
+            pst.setString(5, totalPrice);
 
             pst.executeUpdate();
             pst.close();
 
             //ekelenenlere göre billtable a ekeleme yapma
-            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?)";
+            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?, ?)";
             pst = connection.prepareStatement(query);
 
-            billtable += 3;
+            billtable += 1;
 
             pst.setInt(1, billtable);
             pst.setInt(2, companyID);
@@ -217,55 +222,103 @@ public class Connect {
             pst.close();
 
         }else {
+            //şirket kayıtlı değilse
+            //company id cek
 
-            query = "SELECT `billsID` FROM `billtable` WHERE companyID = " + companyID;
-            statement = connection.createStatement();
+            Connection con = getConnection();
+
+            //fişin idsini
+            query = "SELECT ID FROM `bills` WHERE 1";
+            statement = con.createStatement();
             rs = statement.executeQuery(query);
             while (rs.next()) {
-                billsID = rs.getInt(1);
+                fisID = rs.getInt(1);
             }
+            fisID++;
+            System.out.println("buradayızzzz");
 
             statement.close();
             rs.close();
 
 
+
+
+
+
             PreparedStatement pst;
 
             //fiş tablosna ekleme yap
-            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?)";
+            query = "INSERT INTO bills (ID, date, billNo, Products, totalPrice) VALUES (?, ?, ?, ?, ?)";
             pst =connection.prepareStatement(query);
 
-            billsID += 3;
-
-            pst.setInt(1, billsID);
-            pst.setDate(2, Date.valueOf(date));
+            pst.setInt(1, fisID);
+            pst.setDate(2, (Date) date);
             pst.setInt(3, billNo);
             pst.setString(4, product);
-            pst.setInt(5, totalPrice);
+            pst.setString(5, totalPrice);
 
             pst.executeUpdate();
             pst.close();
+
+
+            query = "SELECT MAX(id) FROM billtable" ;
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            while (rs.next()) {
+                tfis = rs.getInt(1);
+            }
+            tfis += 1;
+            statement.close();
+            rs.close();
+
+            System.out.println("*-*-*-*-*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-* \n" +
+                    tfis + "     " + fisID);
 
             //ekelenenlere göre billtable a ekeleme yapma
-            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?)";
+            query = "INSERT INTO billtable (ID, companyID, billsID) values (?, ?, ?)";
             pst = connection.prepareStatement(query);
 
-            billtable += 3;
 
-            pst.setInt(1, billtable);
+
+            pst.setInt(1, tfis);
             pst.setInt(2, companyID);
-            pst.setInt(3, billsID);
+            pst.setInt(3, fisID);
 
             pst.executeUpdate();
             pst.close();
 
+
         }
+        connection.close();
 
         //bundan önce tesseractin texti almış olması lazım yani parse işlemlerinen sonra çlışaacak Main classının içindeki
 
         //bundan sonra show on table çalışması lazım
 
 
+    }
+
+    public ArrayList<ForTable> searchBtn(String cname, Date date){
+        ArrayList<ForTable> searcList = new ArrayList<>();
+        Connection connection = getConnection();
+        try {
+            String query = "SELECT company.companyName, bills.billNo, bills.date, bills.Products, bills.totalPrice FROM bills, company, billtable " +
+                    "WHERE billtable.billsID = bills.ID AND billtable.companyID = company.ID AND bills.date = "+"'"+ date +"'" + " AND company.companyName = " +"'" +cname+ "'";
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            ForTable urun;
+            while (rs.next()) {
+                urun = new ForTable(rs.getString(1), rs.getInt(2), rs.getDate(3),
+                        rs.getString(4), rs.getString(5));
+                searcList.add(urun);
+            }
+            connection.close();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return searcList;
     }
 
 
@@ -357,11 +410,12 @@ class Company {
 
 class ForTable {
     private String companyName;
-    int billNo, totalPrice;
+    int billNo;
+    String totalPrice;
     private Date date;
     private String products;
 
-    public ForTable(String companyName, int billNo,  Date date, String products, int totalPrice) {
+    public ForTable(String companyName, int billNo,  Date date, String products, String totalPrice) {
         this.companyName = companyName;
         this.billNo = billNo;
         this.totalPrice = totalPrice;
@@ -385,11 +439,11 @@ class ForTable {
         this.billNo = billNo;
     }
 
-    public int getTotalPrice() {
+    public String getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
 
