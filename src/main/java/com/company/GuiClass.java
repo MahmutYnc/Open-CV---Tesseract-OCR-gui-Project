@@ -57,6 +57,7 @@ public class GuiClass extends javax.swing.JFrame {
 
     }
 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -363,7 +364,7 @@ public class GuiClass extends javax.swing.JFrame {
 
                 //System.out.println(path);
                 m.tesseract(path);
-                textSetter(m.rString);
+                textSetter(m.texta);
                 showOnTable(1);
 
 
@@ -460,6 +461,6 @@ public class GuiClass extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     public javax.swing.JTable table;
     private javax.swing.JTextField tarihField;
-    private javax.swing.JTextArea text;
+    public javax.swing.JTextArea text;
     // End of variables declaration
 }

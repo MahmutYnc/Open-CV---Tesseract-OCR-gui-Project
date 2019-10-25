@@ -48,7 +48,7 @@ public class Main {
     private static final int CV_THRESH_BINARY_INV = 1;
     public static GuiClass g;
 
-
+    public static String texta;
     // Source path content images
     static String SRC_PATH = "C:\\Recognize\\java_text";
     static String TESS_DATA = "C:\\Program Files\\Tesseract-OCR\\tessdata";
@@ -246,8 +246,14 @@ public class Main {
 
 
         //write image
+
+
         try{
             f = new File("preprocess/grayscale.tiff");
+            //f = new File("preprocess/adaptive_threshold2.png");
+            //f = new File("preprocess/Gray.png");
+            //f = new File("preprocess/gaussian_blur.png");
+
             ImageIO.write(img, "tiff", f);
 
         }catch(IOException e){
@@ -282,8 +288,7 @@ public class Main {
         //Fiş no splitter
         as = clearTurkishChars(as);
         int fis = 0;
-        sFisNo = regexChecker("(.*?.*:?fıs.*)|(.*?.*:?fis.*)|(.*?.*:?fıs.*)|(.*?.*:?fiis.*)|(.*?.*:?fııs.*)|" +
-                "(.*?.*:?FiİŞ.*)|(.*?.*:?fis.*)| (.*?.*:?fış.*) | (.*?.*:?FIŞ NG.*)| (.*?.*:?fis.*)|(.*?.*:?fis\\$ .*)|(.*?.*:?fi\\$ .*)", as);
+        sFisNo = regexChecker("(.*?.*:?fıs no.*)|(.*?.*:?fis no.*)|(.*?.*:?fıs n.*)|(.*?.*:?fiis n.*)|(.*?.*:?fııs n.*)|(.*?.*:?FiİŞ n.*)|(.*?.*:?fis n.*)| (.*?.*:?fış n.*) | (.*?.*:?FIŞ NG.*)| (.*?.*:?fis n.*)|(.*?.*:?fis n.*)|(.*?.*:?fi\\$ n.*)|(.*?.*:?fisno.*)|(.*?.*:?fis- n.*)", as);
         System.out.println("fiş no :" + sFisNo);
         if (sFisNo != null){
             sFisNo = regexChecker("[0-9]{2,4}", sFisNo);
@@ -297,6 +302,7 @@ public class Main {
 
         sirket = regexChecker("^.*\\r?\\n(.*)", as);
         String lines[] = sirket.split("\\r?\\n");
+
         if (sirket.contains("tesekk")){
             sirket = lines[1];
         } else {
@@ -374,6 +380,23 @@ public class Main {
 
             System.out.println("ürün = "+rtun.get(i));
         }
+
+        StringBuffer sb = new StringBuffer();
+
+        for (String s : rtun) {
+            sb.append(s);
+            sb.append("\n");
+        }
+        String str = sb.toString();
+        str = str.replace("4", "%").replace("x", "%").replace("?", "i").replace("ı", "i");
+        String f = "" + fis;
+
+        texta ="-*- Okunan Fiş -*-\n\n\n"
+                +"Şirket Adı: "+ sirket
+                +"\n\nFiş No: "+ f
+                +"\n\nTarih: " + sDate1
+                +"\n\nÜrünler; \n" + str
+                +"\n\nToplam: " + sToplam;
 
         g.showOnTable(1);
         //send to db
